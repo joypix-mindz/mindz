@@ -237,6 +237,18 @@ export async function loginUser(
   await page.getByTestId('cloud-signin-button').click({
     delay: 200,
   });
+  await loginUserDirectly(page, userEmail, config);
+}
+
+export async function loginUserDirectly(
+  page: Page,
+  userEmail: string,
+  config?: {
+    isElectron?: boolean;
+    beforeLogin?: () => Promise<void>;
+    afterLogin?: () => Promise<void>;
+  }
+) {
   await page.getByPlaceholder('Enter your email address').fill(userEmail);
   await page.getByTestId('continue-login-button').click({
     delay: 200,
