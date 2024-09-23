@@ -5,6 +5,7 @@ import {
   usePagePropertiesManager,
 } from '@affine/core/components/affine/page-properties';
 import { managerContext } from '@affine/core/components/affine/page-properties/common';
+import { DocModeRow } from '@affine/core/components/affine/page-properties/info-modal/doc-mode-row';
 import { LinksRow } from '@affine/core/components/affine/page-properties/info-modal/links-row';
 import { TagsRow } from '@affine/core/components/affine/page-properties/info-modal/tags-row';
 import { TimeRow } from '@affine/core/components/affine/page-properties/info-modal/time-row';
@@ -65,6 +66,7 @@ export const DocInfoSheet = ({ docId }: { docId: string }) => {
             ) : null}
             <div className={styles.properties}>
               <TagsRow docId={docId} readonly={manager.readonly} />
+              <DocModeRow docId={docId} />
               <SortableProperties>
                 {properties =>
                   properties.length ? (

@@ -1,4 +1,12 @@
-import { Avatar, Checkbox, DatePicker, Menu } from '@affine/component';
+import {
+  Avatar,
+  Checkbox,
+  DatePicker,
+  Menu,
+  notify,
+  RadioGroup,
+  type RadioItem,
+} from '@affine/component';
 import { CloudDocMetaService } from '@affine/core/modules/cloud/services/cloud-doc-meta';
 import type {
   PageInfoCustomProperty,
@@ -7,6 +15,7 @@ import type {
 } from '@affine/core/modules/properties/services/schema';
 import { WorkspaceFlavour } from '@affine/env/workspace';
 import { i18nTime, useI18n } from '@affine/i18n';
+import type { DocMode } from '@blocksuite/affine/blocks';
 import {
   DocService,
   useLiveData,
@@ -200,6 +209,52 @@ export const TagsValue = () => {
       placeholder={t['com.affine.page-properties.property-value-placeholder']()}
       pageId={doc.id}
       readonly={doc.blockSuiteDoc.readonly}
+    />
+  );
+};
+
+export const DocModeValue = () => {
+  const doc = useService(DocService).doc;
+  const primaryMode = useLiveData(doc.primaryMode$);
+  const t = useI18n();
+
+  const DocModeItems = useMemo<RadioItem[]>(
+    () => [
+      {
+        value: 'page' as DocMode,
+        label: t['Page'](),
+      },
+      {
+        value: 'edgeless' as DocMode,
+        label: t['Edgeless'](),
+      },
+    ],
+    [t]
+  );
+
+  const handleChange = useCallback(
+    (e: DocMode) => {
+      doc.setPrimaryMode(e);
+      notify.success({
+        title:
+          e === 'page'
+            ? t['com.affine.toastMessage.defaultMode.page.title']()
+            : t['com.affine.toastMessage.defaultMode.edgeless.title'](),
+        message:
+          e === 'page'
+            ? t['com.affine.toastMessage.defaultMode.page.message']()
+            : t['com.affine.toastMessage.defaultMode.edgeless.message'](),
+      });
+    },
+    [doc, t]
+  );
+
+  return (
+    <RadioGroup
+      width={194}
+      value={primaryMode}
+      onChange={handleChange}
+      items={DocModeItems}
     />
   );
 };

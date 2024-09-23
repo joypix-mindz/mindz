@@ -635,6 +635,7 @@
   "com.affine.page-properties.property.tags": "标签",
   "com.affine.page-properties.property.text": "文本",
   "com.affine.page-properties.property.updatedBy": "最后编辑者",
+  "com.affine.page-properties.property.docMode": "文档模式",
   "com.affine.page-properties.settings.title": "自定义属性",
   "com.affine.page-properties.tags.open-tags-page": "打开标签页面",
   "com.affine.page-properties.tags.selector-header-title": "选择或者创建一个标签",

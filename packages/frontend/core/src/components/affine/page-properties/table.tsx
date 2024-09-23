@@ -14,6 +14,7 @@ import { assertExists } from '@blocksuite/affine/global/utils';
 import {
   ArrowDownSmallIcon,
   DeleteIcon,
+  FileIcon,
   InvisibleIcon,
   MoreHorizontalIcon,
   PlusIcon,
@@ -77,6 +78,7 @@ import {
   PagePropertiesManager,
 } from './page-properties-manager';
 import {
+  DocModeValue,
   propertyValueRenderers,
   TagsValue,
 } from './property-row-value-renderer';
@@ -102,6 +104,7 @@ interface SortablePropertiesProps {
 export const SortableProperties = ({ children }: SortablePropertiesProps) => {
   const manager = useContext(managerContext);
   const properties = useMemo(() => manager.sorter.getOrderedItems(), [manager]);
+
   const editingItem = useAtomValue(editingPropertyAtom);
   const draggable = !manager.readonly && !editingItem;
   const sensors = useSensors(
@@ -825,6 +828,36 @@ export const PageTagsRow = ({
   );
 };
 
+export const PageDocModeRow = ({
+  rowNameClassName,
+}: {
+  rowNameClassName?: string;
+}) => {
+  const t = useI18n();
+  return (
+    <div
+      className={styles.tagsPropertyRow}
+      data-testid="page-property-row"
+      data-property="doc-mode"
+    >
+      <div
+        className={clsx(styles.propertyRowNameCell, rowNameClassName)}
+        data-testid="page-property-row-name"
+      >
+        <div className={styles.propertyRowNameContainer}>
+          <div className={styles.propertyRowIconContainer}>
+            <FileIcon />
+          </div>
+          <div className={styles.propertyRowName}>
+            {t['com.affine.page-properties.property.docMode']()}
+          </div>
+        </div>
+      </div>
+      <DocModeValue />
+    </div>
+  );
+};
+
 interface PagePropertiesTableBodyProps {
   className?: string;
   style?: React.CSSProperties;
@@ -844,6 +877,7 @@ export const PagePropertiesTableBody = ({
       style={style}
     >
       <PageTagsRow />
+      <PageDocModeRow />
       <SortableProperties>
         {properties =>
           properties.length ? (
