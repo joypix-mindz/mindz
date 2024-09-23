@@ -45,6 +45,8 @@ export const PageHeaderMenuButton = () => {
 
   const handleSwitchMode = useCallback(() => {
     const mode = primaryMode === 'page' ? 'edgeless' : 'page';
+    // TODO(@JimmFly): remove setMode when there has view mode switch
+    editorService.editor.setMode(mode);
     editorService.editor.doc.setPrimaryMode(mode);
     track.$.header.docOptions.switchPageMode({
       mode,

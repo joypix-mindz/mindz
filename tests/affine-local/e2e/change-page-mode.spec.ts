@@ -8,8 +8,11 @@ import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
   clickPageMoreActions,
+  getBlockSuiteEditorTitle,
+  waitForAllPagesLoad,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
+import { clickSideBarAllPageButton } from '@affine-test/kit/utils/sidebar';
 import { expect } from '@playwright/test';
 
 test('Switch to edgeless by switch edgeless item', async ({ page }) => {
@@ -94,13 +97,26 @@ test('Quick Switch Doc Mode, Doc Mode should stable', async ({ page }) => {
   expect(await getPageMode(page)).toBe('page');
 });
 
-test('Convert to edgeless by editor header items', async ({ page }) => {
+test('default to edgeless by editor header items', async ({ page }) => {
   await openHomePage(page);
   await waitForEditorLoad(page);
-  await clickNewPageButton(page);
+  await clickNewPageButton(page, 'this is a new page');
+  const title = getBlockSuiteEditorTitle(page);
+  expect(await title.textContent()).toBe('this is a new page');
+
   await clickPageMoreActions(page);
   const menusEdgelessItem = page.getByTestId('editor-option-menu-edgeless');
   await menusEdgelessItem.click({ delay: 100 });
+
+  await clickSideBarAllPageButton(page);
+  await waitForAllPagesLoad(page);
+  const docItem = page.locator(
+    `[data-testid="page-list-item"]:has-text("this is a new page")`
+  );
+  expect(docItem).not.toBeUndefined();
+  await docItem.click();
+
+  await waitForEditorLoad(page);
   const edgeless = page.locator('affine-edgeless-root');
   await expect(edgeless).toBeVisible();
 });

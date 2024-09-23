@@ -116,9 +116,10 @@ test('property table reordering', async ({ page }) => {
     )
   );
 
-  // new order should be (Tags), Number, Date, Checkbox, Text
+  // new order should be (Tags), (Doc Mode), Number, Date, Checkbox, Text
   for (const [index, property] of [
     'Tags',
+    'Doc Mode',
     'Number',
     'Date',
     'Checkbox',
