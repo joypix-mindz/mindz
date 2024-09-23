@@ -41,7 +41,6 @@ export const EditorModeSwitch = () => {
     if (currentMode === 'page' || isSharedMode || trash) return;
     editor.setMode('page');
     editor.setSelector(undefined);
-    editor.doc.setPrimaryMode('page');
     toast(t['com.affine.toastMessage.pageMode']());
     track.$.header.actions.switchPageMode({ mode: 'page' });
   }, [currentMode, editor, isSharedMode, t, trash]);
@@ -50,7 +49,6 @@ export const EditorModeSwitch = () => {
     if (currentMode === 'edgeless' || isSharedMode || trash) return;
     editor.setMode('edgeless');
     editor.setSelector(undefined);
-    editor.doc.setPrimaryMode('edgeless');
     toast(t['com.affine.toastMessage.edgelessMode']());
     track.$.header.actions.switchPageMode({ mode: 'edgeless' });
   }, [currentMode, editor, isSharedMode, t, trash]);
