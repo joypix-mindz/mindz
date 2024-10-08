@@ -91,7 +91,6 @@ export const createConfiguration: (
   buildFlags: BuildFlags,
   buildConfig: BUILD_CONFIG_TYPE
 ) => webpack.Configuration = (cwd, buildFlags, buildConfig) => {
-  const blocksuiteBaseDir = buildFlags.localBlockSuite;
   const config = {
     name: 'affine',
     // to set a correct base path for the source map
@@ -146,81 +145,9 @@ export const createConfiguration: (
         '.mjs': ['.mjs', '.mts'],
       },
       extensions: ['.js', '.ts', '.tsx'],
-      fallback:
-        blocksuiteBaseDir === undefined
-          ? undefined
-          : {
-              events: false,
-            },
       alias: {
         yjs: join(workspaceRoot, 'node_modules', 'yjs'),
         lit: join(workspaceRoot, 'node_modules', 'lit'),
-        '@blocksuite/affine/block-std': blocksuiteBaseDir
-          ? join(blocksuiteBaseDir, 'packages', 'framework', 'block-std', 'src')
-          : join(
-              workspaceRoot,
-              'node_modules',
-              '@blocksuite',
-              'block-std',
-              'dist'
-            ),
-        '@blocksuite/affine/blocks': blocksuiteBaseDir
-          ? join(blocksuiteBaseDir, 'packages', 'blocks', 'src')
-          : join(
-              workspaceRoot,
-              'node_modules',
-              '@blocksuite',
-              'blocks',
-              'dist'
-            ),
-        '@blocksuite/affine/presets': blocksuiteBaseDir
-          ? join(blocksuiteBaseDir, 'packages', 'presets', 'src')
-          : join(
-              workspaceRoot,
-              'node_modules',
-              '@blocksuite',
-              'presets',
-              'dist'
-            ),
-        '@blocksuite/affine/global': blocksuiteBaseDir
-          ? join(blocksuiteBaseDir, 'packages', 'framework', 'global', 'src')
-          : join(
-              workspaceRoot,
-              'node_modules',
-              '@blocksuite',
-              'global',
-              'dist'
-            ),
-        '@blocksuite/affine/store/providers/broadcast-channel':
-          blocksuiteBaseDir
-            ? join(
-                blocksuiteBaseDir,
-                'packages',
-                'framework',
-                'store',
-                'src/providers/broadcast-channel'
-              )
-            : join(
-                workspaceRoot,
-                'node_modules',
-                '@blocksuite',
-                'store',
-                'dist',
-                'providers',
-                'broadcast-channel.js'
-              ),
-        '@blocksuite/affine/store': blocksuiteBaseDir
-          ? join(blocksuiteBaseDir, 'packages', 'framework', 'store', 'src')
-          : join(workspaceRoot, 'node_modules', '@blocksuite', 'store', 'dist'),
-        '@blocksuite/inline': blocksuiteBaseDir
-          ? join(blocksuiteBaseDir, 'packages', 'framework', 'inline', 'src')
-          : join(
-              workspaceRoot,
-              'node_modules',
-              '@blocksuite',
-              'inline',
-              'dist'
-            ),
       },
     },
 
@@ -251,7 +178,33 @@ export const createConfiguration: (
         {
           oneOf: [
             {
-              test: /\.tsx?$/,
+              test: /\.ts$/,
+              exclude: /node_modules/,
+              loader: 'swc-loader',
+              options: {
+                // https://swc.rs/docs/configuring-swc/
+                jsc: {
+                  preserveAllComments: true,
+                  parser: {
+                    syntax: 'typescript',
+                    dynamicImport: true,
+                    topLevelAwait: false,
+                    tsx: false,
+                    decorators: true,
+                  },
+                  target: 'es2022',
+                  externalHelpers: false,
+                  transform: {
+                    useDefineForClassFields: false,
+                    decoratorVersion: '2022-03',
+                  },
+                },
+                sourceMaps: true,
+                inlineSourcesContent: true,
+              },
+            },
+            {
+              test: /\.tsx$/,
               exclude: /node_modules/,
               loader: 'swc-loader',
               options: {
@@ -333,7 +286,11 @@ export const createConfiguration: (
     plugins: compact([
       IN_CI ? null : new webpack.ProgressPlugin({ percentBy: 'entries' }),
       buildFlags.mode === 'development'
-        ? new ReactRefreshWebpackPlugin({ overlay: false, esModule: true })
+        ? new ReactRefreshWebpackPlugin({
+            overlay: false,
+            esModule: true,
+            include: /\.tsx$/,
+          })
         : // todo: support multiple entry points
           new MiniCssExtractPlugin({
             filename: `[name].[contenthash:8].css`,
