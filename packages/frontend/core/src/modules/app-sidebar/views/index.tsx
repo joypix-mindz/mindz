@@ -55,6 +55,15 @@ export function AppSidebar({ children }: PropsWithChildren) {
       setDeferredHovering(false);
       return;
     }
+
+    const showingModal = document.querySelector('modal-transition-container');
+    const showingDialog = document.querySelector(
+      '[data-radix-popper-content-wrapper]'
+    );
+
+    if (showingModal || showingDialog) {
+      return;
+    }
     // we make a little delay here.
     // this allow the sidebar close animation to complete.
     const timeout = setTimeout(() => {
